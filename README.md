@@ -4,6 +4,14 @@
 
 Repositório da disciplina PMR3309 - Sistemas Computacionais pra Mecatrônica, ministrada em 2023.
 
+## ⬆️ Dependências
+
+Para usuários de linux 64 bits, é necessário instalar o pacote `gcc-multilib` para a compilação do código de 32 bits:
+
+```bash
+sudo apt install gcc-multilib
+```
+
 ## 🚀 Execução
 
 Usando gcc:
