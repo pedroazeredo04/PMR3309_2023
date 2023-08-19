@@ -174,7 +174,10 @@ NOTES:
  *   Rating: 1
  */
 int bitAnd(int x, int y) {
-  return 2;
+   /*
+  * @note  ~x|~y = ~(x&y)
+  */
+  return ~(~x | ~y);
 }
 /* 
  * getByte - Extract byte n from word x
@@ -185,7 +188,13 @@ int bitAnd(int x, int y) {
  *   Rating: 2
  */
 int getByte(int x, int n) {
-  return 2;
+ /*
+  * @brief Shift x to right by the exact amount (x>>(8*n))
+  *        then get only the LSB of the result (& 255)
+  * 
+  * @note  8*n = n << 3
+  */
+  return x>>(n << 3) & 255;
 }
 /* 
  * logicalShift - shift x to the right by n, using a logical shift
@@ -216,7 +225,14 @@ int bitCount(int x) {
  *   Rating: 4 
  */
 int bang(int x) {
-  return 2;
+   /*
+  * @brief The first bit of (x | -x) is 1 if (x!=0);
+  *        then get only the MSB: ( (result >> 31) & 1);
+  *        finally, as this bit needs to be flipped, add (^ 1)
+  * 
+  * @note  ~x+1 = -x
+  */
+  return (((~x+1 | x) >> 31) & 1) ^ 1;
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -258,7 +274,7 @@ int divpwr2(int x, int n) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~x+1;
 }
 /* 
  * isPositive - return 1 if x > 0, return 0 otherwise 
