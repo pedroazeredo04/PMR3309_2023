@@ -232,7 +232,7 @@ int bang(int x) {
   * 
   * @note  ~x+1 = -x
   */
-  return (((~x+1 | x) >> 31) & 1) ^ 1;
+  return ((( (~x+1) | x) >> 31) & 1) ^ 1;
 }
 /* 
  * tmin - return minimum two's complement integer 
