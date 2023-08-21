@@ -253,10 +253,10 @@ int bitCount(int x) {
   */
 
   x = (x & 0x55555555) + (((x >> 1) & 0x55555555));  // Sum how many 1's are in each 2 bit division, and store it in each 2 bit division
-  x = (x & 0x33333333) + (((x >> 2) & 0x33333333));  // Sum how many 1's are in each 4 bit division and store it in each 4 bit division
-  x = (x & 0x0F0F0F0F) + (((x >> 4) & 0x0F0F0F0F));  // Sum how many 1's are in each 8 bit division and store it in each 8 bit division
-  x = (x & 0x00FF00FF) + (((x >> 8) & 0x00FF00FF));  // Sum how many 1's are in each 16 bit division and store it in each 16 bit divisio
-  x = (x & 0x0000FFFF) + (((x >> 16) & 0x0000FFFF)); // Sum how many 1's are in each 32 bit division and store it in each 32 bit division
+  x = (x & 0x33333333) + (((x >> 2) & 0x33333333));  // Sum how many 1's are in each 4 bit division, and store it in each 4 bit division
+  x = (x & 0x0F0F0F0F) + (((x >> 4) & 0x0F0F0F0F));  // Sum how many 1's are in each 8 bit division, and store it in each 8 bit division
+  x = (x & 0x00FF00FF) + (((x >> 8) & 0x00FF00FF));  // Sum how many 1's are in each 16 bit division, and store it in each 16 bit division
+  x = (x & 0x0000FFFF) + (((x >> 16) & 0x0000FFFF)); // Sum how many 1's are in each 32 bit division, and store it in each 32 bit division
 
   return x;
 }
