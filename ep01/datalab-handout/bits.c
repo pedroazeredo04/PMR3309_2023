@@ -190,7 +190,7 @@ int bitAnd(int x, int y) {
 int getByte(int x, int n) {
  /*
   * @brief Shift x to right by the exact amount (x>>(8*n))
-  *        then get only the LSB of the result (& 255)
+  *        then get only the last byte of the result (& 255)
   * 
   * @note  8*n = n << 3
   */
@@ -205,7 +205,40 @@ int getByte(int x, int n) {
  *   Rating: 3 
  */
 int logicalShift(int x, int n) {
-  return 2;
+ /*
+  * @brief   Build bin2rem, which removes the undesired bits of the arithmetic shift with a &
+  * 
+  * @example n = 2
+  *          x =       10001001
+  *          x >> n =  11100010
+  *          bin2rem = 00111111
+  * 
+  * @note    ((1 << 31 - n) << 1) is used instead of (1 << 32 - n) as left shifting 32 bits is undefined behavior.
+  */
+
+  int minus_n = ~n+1;
+  int minus_1 = ~1+1;
+  int left_shift_value = (31 + minus_n);
+  int bin2rem = (((1 << left_shift_value) << 1) + minus_1);
+
+  return (x >> n) & bin2rem;
+}
+int recursiveLogicalShift(int x, int n) {
+ /*
+  * @brief Return x>>n if most signifcant bit is zero or n is zero
+  *        Otherwise, return (x>>n) + logicalShift(1<<31, n-1)
+  * 
+  * @note  I thought this version was cooler, but I can't use if's
+  */
+
+  int is_n_not_zero = !(!n);
+  int is_msb_not_zero = !(!(x & 1<<31));
+
+  if (n == 0) {
+    return (x >> n);
+  }
+
+  return (x >> n) + is_n_not_zero * is_msb_not_zero * logicalShift(1<<31, n-1);
 }
 /*
  * bitCount - returns count of number of 1's in word
@@ -241,7 +274,10 @@ int bang(int x) {
  *   Rating: 1
  */
 int tmin(void) {
-  return 2;
+   /*
+  * @brief Shift 1 to right so that the MSB is 1 and the rest is 0
+  */
+  return 1<<31;
 }
 /* 
  * fitsBits - return 1 if x can be represented as an 
