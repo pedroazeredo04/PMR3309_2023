@@ -14,9 +14,20 @@ sudo apt install gcc-multilib
 
 ## 🚀 Execução
 
+### 1. Aulas
+
 Usando gcc:
 
 ```bash
 gcc arquivo.c -o build/arquivo
 ./build/arquivo
+```
+
+### 2. ep01
+
+No diretório `ep01/datalab-handout/`:
+
+```bash
+make btest
+./btest
 ```
