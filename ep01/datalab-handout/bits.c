@@ -252,13 +252,18 @@ int bitCount(int x) {
   * @brief Build a binary that is equivalent to the count.
   */
 
-  x = (x & 0x55555555) + (((x >> 1) & 0x55555555));  // Sum how many 1's are in each 2 bit division, and store it in each 2 bit division
-  x = (x & 0x33333333) + (((x >> 2) & 0x33333333));  // Sum how many 1's are in each 4 bit division, and store it in each 4 bit division
-  x = (x & 0x0F0F0F0F) + (((x >> 4) & 0x0F0F0F0F));  // Sum how many 1's are in each 8 bit division, and store it in each 8 bit division
-  x = (x & 0x00FF00FF) + (((x >> 8) & 0x00FF00FF));  // Sum how many 1's are in each 16 bit division, and store it in each 16 bit division
-  x = (x & 0x0000FFFF) + (((x >> 16) & 0x0000FFFF)); // Sum how many 1's are in each 32 bit division, and store it in each 32 bit division
+  int const_0x55555555 = (0x55 << 24) | (0x55 << 16) | (0x55 << 8) | 0x55;
+  int const_0x33333333 = (0x33 << 24) | (0x33 << 16) | (0x33 << 8) | 0x33;
+  int const_0x0F0F0F0F = (0x0F << 24) | (0x0F << 16) | (0x0F << 8) | 0x0F;
 
-  return x;
+  // Handle two's complement representation of negative numbers
+  x = x + (~((x >> 1) & const_0x55555555)+1);
+  x = (x & const_0x33333333) + ((x >> 2) & const_0x33333333);
+  x = (x + (x >> 4)) & const_0x0F0F0F0F;
+  x = x + (x >> 8);
+  x = x + (x >> 16);
+
+  return x & 0x3F;
 }
 /* 
  * bang - Compute !x without using !
