@@ -299,7 +299,11 @@ int tmin(void) {
  *   Rating: 2
  */
 int fitsBits(int x, int n) {
-  return 2;
+  int _32_minus_n = 32 + (~n+1);  // 32 - n
+  int shifted = x << _32_minus_n; // Shifta x pra esquerda 32 - n vezes
+  
+  // Shifta pra esquerda 32 - n, se é o mesmo do original, coube.
+  return !(shifted >> _32_minus_n ^ x);
 }
 /* 
  * divpwr2 - Compute x/(2^n), for 0 <= n <= 30
@@ -310,7 +314,11 @@ int fitsBits(int x, int n) {
  *   Rating: 2
  */
 int divpwr2(int x, int n) {
-    return 2;
+  int is_negative = (x >> 31);
+  int is_divisible_by_2powN = !(x ^ ((x >> n) << n));
+  int is_n_not_zero = !(!n);
+
+  return (x >> n) + ((!is_divisible_by_2powN) & is_negative & is_n_not_zero);
 }
 /* 
  * negate - return -x 
@@ -330,7 +338,10 @@ int negate(int x) {
  *   Rating: 3
  */
 int isPositive(int x) {
-  return 2;
+  int is_zero = !x;
+  int is_negative = (x >> 31) & 1;
+
+  return !(is_zero + is_negative);
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -340,7 +351,21 @@ int isPositive(int x) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  int minus_y = ~y+1;
+  int x_minus_y = x + minus_y;  // x - y <= 0 ---> x <= y
+
+  int sign_x = !((x >> 31) & 1);  // 1 if x >= 0, 0 if x < 0
+  int sign_minus_y = !((minus_y >> 31) & 1);  // 1 if -y  >= 0; 0 if -y < 0
+  int same_sign_positive = sign_x & sign_minus_y;  // 1 if x and -y are >= 0
+  int same_sign_negative = (!sign_x) & (!sign_minus_y);  // 1 if x and -y are < 0
+
+  int is_result_negative = (x_minus_y >> 31) & 1;
+  int is_zero = !x_minus_y;
+
+  int is_overflowed_pos = same_sign_positive & is_result_negative;
+  int is_overflowed_neg = same_sign_negative & (~is_result_negative);
+
+  return ((is_result_negative & (!is_overflowed_pos)) | is_zero) | (is_overflowed_neg);
 }
 /*
  * ilog2 - return floor(log base 2 of x), where x > 0
