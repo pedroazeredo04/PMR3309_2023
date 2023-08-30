@@ -210,7 +210,7 @@ int logicalShift(int x, int n) {
   * 
   * @example n = 2
   *          x =       10001001
-  *          x >> n =  11100010
+  *          x >> n =  00100010
   *          bin2rem = 00111111
   * 
   * @note    ((1 << 31 - n) << 1) is used instead of (1 << 32 - n) as left shifting 32 bits is undefined behavior.
@@ -375,7 +375,15 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4
  */
 int ilog2(int x) {
-  return 2;
+  int result = 0;
+  
+  result = (!!(x >> 16)) << 4;
+  result = result + ((!!(x >> (result + 8))) << 3);
+  result = result + ((!!(x >> (result + 4))) << 2);
+  result = result + ((!!(x >> (result + 2))) << 1);
+  result = result + (!!(x >> (result + 1)));
+  
+  return result;
 }
 /* 
  * float_neg - Return bit-level equivalent of expression -f for
@@ -389,7 +397,23 @@ int ilog2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
- return 2;
+  int is_negative = (uf >> 31) & 1;
+  int flip_last = (1<<31);
+
+  unsigned exponent = (uf >> 23) & 0xFF;
+  unsigned mantissa = uf & 0x7FFFFF;
+  unsigned is_zero = exponent == 0 && mantissa == 0;
+  unsigned is_nan = ((exponent == 0xFF) && (mantissa != 0));
+
+  if (is_nan) {
+    return uf;
+  }
+
+  if (is_negative || is_zero) {
+    return uf - flip_last;
+  }
+
+  return uf + flip_last;
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
