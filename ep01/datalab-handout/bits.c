@@ -404,7 +404,7 @@ int ilog2(int x) {
 unsigned float_neg(unsigned uf) {
   unsigned exponent = (uf >> 23) & 0xFF;  // 8 bits do expoente
   unsigned mantissa = uf & 0x7FFFFF;  // 23 bits da mantissa
-  unsigned is_nan = (exponent == 0xFF) && (mantissa != 0); 
+  unsigned is_nan = (exponent == 0xFF) && (mantissa != 0);
 
   return is_nan ? uf : uf ^ 0x80000000;  // Se não for nan, flipo o último bit
 }
@@ -418,7 +418,49 @@ unsigned float_neg(unsigned uf) {
  *   Rating: 4
  */
 unsigned float_i2f(int x) {
-  return 2;
+  unsigned sign = 0, expo_bits = 0, mant_bits = 0;
+  unsigned ux = x;
+  int bits;
+  unsigned leaf, half;
+  unsigned exponent = 0;
+  unsigned mantissa;
+  unsigned roundup = 0;
+
+  if (x == 0) {
+    return 0;
+  }
+
+  if (x < 0) {
+    sign = 1;
+    ux = -x;
+  }
+
+  mantissa = ux;
+
+  while (ux > 1) {
+      ux >>= 1;
+      exponent++;
+  }
+
+  expo_bits = exponent + 127;
+  mant_bits = mantissa & ((1 << exponent) - 1);
+  bits = exponent - 23; // how many bits we need to round or extend?
+
+  if (bits > 0) { // rounding
+      leaf = mant_bits & ((1 << bits) - 1);
+      half = 1 << (bits - 1);
+      mant_bits = mant_bits >> bits;
+      if (leaf > half || (leaf == half && mant_bits & 0x1)) {
+          // round up if
+          // greater than half [OR] exactly half way and the rounding bit is 1
+          roundup = 1;
+      }
+  } else {        // extending
+      mant_bits <<= (-bits);
+  }
+
+  return ((sign << 31) | (expo_bits << 23) | mant_bits) + roundup;
+
 }
 /* 
  * float_twice - Return bit-level equivalent of expression 2*f for
@@ -432,5 +474,21 @@ unsigned float_i2f(int x) {
  *   Rating: 4
  */
 unsigned float_twice(unsigned uf) {
-  return 2;
+  unsigned int exponent = (uf >> 23) & 0xFF;  // 8 bits do expoente
+  unsigned int mantissa = uf & 0x7FFFFF;  // 23 bits da mantissa
+  unsigned int sign = (uf>>31) & 1;
+  unsigned int is_nan = (exponent == 0xFF) && (mantissa != 0);
+  unsigned int is_inf = (exponent == 0xFF) && (mantissa == 0);
+
+  if (is_nan || is_inf) {
+    return uf;
+  }
+
+  // Se não tem expoente, retorna o mesmo número com a mantissa shiftada pra direita (mantissa * 2)
+  if (exponent == 0) {
+    return (sign << 31) | (exponent << 23) | (mantissa << 1);
+  }
+
+  // Soma 1 no expoente
+  return uf + 0x800000;
 }
