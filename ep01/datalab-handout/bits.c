@@ -421,7 +421,7 @@ unsigned float_i2f(int x) {
   unsigned sign = 0, expo_bits = 0, mant_bits = 0;
   unsigned ux = x;
   int bits;
-  unsigned leaf, half;
+  unsigned cima, baixo;
   unsigned exponent = 0;
   unsigned mantissa;
   unsigned roundup = 0;
@@ -444,18 +444,19 @@ unsigned float_i2f(int x) {
 
   expo_bits = exponent + 127;
   mant_bits = mantissa & ((1 << exponent) - 1);
-  bits = exponent - 23; // how many bits we need to round or extend?
+  bits = exponent - 23;
 
-  if (bits > 0) { // rounding
-      leaf = mant_bits & ((1 << bits) - 1);
-      half = 1 << (bits - 1);
+  // Arredontamento
+  if (bits > 0) {
+      cima = mant_bits & ((1 << bits) - 1);
+      baixo = 1 << (bits - 1);
       mant_bits = mant_bits >> bits;
-      if (leaf > half || (leaf == half && mant_bits & 0x1)) {
-          // round up if
-          // greater than half [OR] exactly half way and the rounding bit is 1
+      if (cima > baixo || (cima == baixo && (mant_bits & 0x1))) {
+          // Arredonda pra cima se a parte de cima é maior que a de baixo
+          // OU se a parte de cima é igual a de baixo e o último bit da mantissa é 1 (arredonda pra par)
           roundup = 1;
       }
-  } else {        // extending
+  } else {
       mant_bits <<= (-bits);
   }
 
