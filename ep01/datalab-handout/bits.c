@@ -402,23 +402,11 @@ int ilog2(int x) {
  *   Rating: 2
  */
 unsigned float_neg(unsigned uf) {
-  int is_negative = (uf >> 31) & 1;
-  int flip_last = (1<<31);
+  unsigned exponent = (uf >> 23) & 0xFF;  // 8 bits do expoente
+  unsigned mantissa = uf & 0x7FFFFF;  // 23 bits da mantissa
+  unsigned is_nan = (exponent == 0xFF) && (mantissa != 0); 
 
-  unsigned exponent = (uf >> 23) & 0xFF;
-  unsigned mantissa = uf & 0x7FFFFF;
-  unsigned is_zero = exponent == 0 && mantissa == 0;
-  unsigned is_nan = ((exponent == 0xFF) && (mantissa != 0));
-
-  if (is_nan) {
-    return uf;
-  }
-
-  if (is_negative || is_zero) {
-    return uf - flip_last;
-  }
-
-  return uf + flip_last;
+  return is_nan ? uf : uf ^ 0x80000000;  // Se não for nan, flipo o último bit
 }
 /* 
  * float_i2f - Return bit-level equivalent of expression (float) x
